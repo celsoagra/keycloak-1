@@ -95,7 +95,7 @@ public class UserAttributeLDAPStorageMapper extends AbstractLDAPStorageMapper {
 
         Property<Object> userModelProperty = userModelProperties.get(userModelAttrName.toLowerCase());
 
-        // this feature will find an attribute from LDAP Base DN, to be set into user Model Attribute
+        // Find an attribute from LDAP Base DN, to be set into user Model Attribute
         if (isReadFromBaseDN) {
             LDAPDn entryDn = ldapUser.getDn();
             String ldapAttrEntryDNValue = entryDn.getAttrValue(ldapAttrName);
