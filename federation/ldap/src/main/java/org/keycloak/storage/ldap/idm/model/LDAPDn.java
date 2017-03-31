@@ -18,10 +18,7 @@
 package org.keycloak.storage.ldap.idm.model;
 
 import javax.naming.ldap.Rdn;
-import java.util.Collection;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.LinkedList;
+import java.util.*;
 
 /**
  * @author <a href="mailto:mposolda@redhat.com">Marek Posolda</a>
@@ -113,17 +110,13 @@ public class LDAPDn {
      * So, it can search by attribute name from DN like "uid=joe,ou=group1,dc=something,dc=org"
      */
     public String getAttrValue(String attribute) {
-        Iterator entriesIterator = entries.iterator();
-        String result = null;
-
-        while (entriesIterator.hasNext()) {
-            Entry entry = (Entry) entriesIterator.next();
-            if (entry.attrName.equals(attribute)) {
-                result = entry.attrValue;
-                break;
+        List<String> result = new ArrayList<String>();
+        for (Entry rdn : entries) {
+            if (rdn.attrName.equals(attribute)) {
+                result.add(rdn.attrValue);
             }
         }
-        return result;
+        return (result.size() == 0) ? null : String.join(",", result);
     }
 
     /**
