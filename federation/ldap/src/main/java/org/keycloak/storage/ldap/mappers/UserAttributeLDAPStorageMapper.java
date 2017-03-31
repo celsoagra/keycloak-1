@@ -31,6 +31,7 @@ import org.keycloak.models.utils.reflection.PropertyCriteria;
 import org.keycloak.models.utils.reflection.PropertyQueries;
 import org.keycloak.storage.UserStorageProvider;
 import org.keycloak.storage.ldap.LDAPStorageProvider;
+import org.keycloak.storage.ldap.idm.model.LDAPDn;
 import org.keycloak.storage.ldap.idm.model.LDAPObject;
 import org.keycloak.storage.ldap.idm.query.Condition;
 import org.keycloak.storage.ldap.idm.query.internal.LDAPQuery;
@@ -80,6 +81,7 @@ public class UserAttributeLDAPStorageMapper extends AbstractLDAPStorageMapper {
     public static final String READ_ONLY = "read.only";
     public static final String ALWAYS_READ_VALUE_FROM_LDAP = "always.read.value.from.ldap";
     public static final String IS_MANDATORY_IN_LDAP = "is.mandatory.in.ldap";
+    public static final String IS_READ_FROM_BASE_DN = "is.red.from.base.dn";
 
     public UserAttributeLDAPStorageMapper(ComponentModel mapperModel, LDAPStorageProvider ldapProvider, RealmModel realm) {
         super(mapperModel, ldapProvider, realm);
@@ -89,8 +91,16 @@ public class UserAttributeLDAPStorageMapper extends AbstractLDAPStorageMapper {
     public void onImportUserFromLDAP(LDAPObject ldapUser, UserModel user, boolean isCreate) {
         String userModelAttrName = mapperModel.getConfig().getFirst(USER_MODEL_ATTRIBUTE);
         String ldapAttrName = mapperModel.getConfig().getFirst(LDAP_ATTRIBUTE);
+        boolean isReadFromBaseDN = parseBooleanParameter(mapperModel, IS_READ_FROM_BASE_DN);
 
         Property<Object> userModelProperty = userModelProperties.get(userModelAttrName.toLowerCase());
+
+        // this feature will find an attribute from LDAP Base DN, to be set into user Model Attribute
+        if (isReadFromBaseDN) {
+            LDAPDn entryDn = ldapUser.getDn();
+            String ldapAttrEntryDNValue = entryDn.getAttrValue(ldapAttrName);
+            setPropertyOnUserModel(userModelProperty, user, ldapAttrEntryDNValue);
+        }
 
         if (userModelProperty != null) {
 

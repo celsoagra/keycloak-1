@@ -69,6 +69,10 @@ public class UserAttributeLDAPStorageMapperFactory extends AbstractLDAPStorageMa
                                .helpText("If true, attribute is mandatory in LDAP. Hence if there is no value in Keycloak DB, the empty value will be set to be propagated to LDAP")
                                .type(ProviderConfigProperty.BOOLEAN_TYPE)
                                .defaultValue("false").add()
+                    .property().name(UserAttributeLDAPStorageMapper.IS_READ_FROM_BASE_DN).label("Read from Base DN")
+                                .helpText("If true, then during reading of the base DN the attribute will be set in User Model Atributes")
+                                .type(ProviderConfigProperty.BOOLEAN_TYPE)
+                                .defaultValue("false").add()
                     .build();
     }
 
